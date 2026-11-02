@@ -7,7 +7,7 @@ export async function GET() {
   const session = await getSession();
   const admins = getAdminEmails();
   const userEmail = session?.user?.email || null;
-  const isAdmin = isAdminEmail(userEmail);
+  const isAdmin = Boolean(session?.user?.isAdmin || isAdminEmail(userEmail));
 
   return NextResponse.json({
     authenticated: Boolean(session?.user),
@@ -18,4 +18,3 @@ export async function GET() {
     nextAuthUrl: process.env.NEXTAUTH_URL || null,
   });
 }
-
