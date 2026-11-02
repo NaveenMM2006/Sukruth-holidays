@@ -4,17 +4,23 @@ import { getServerSession } from "next-auth";
 
 export const adminEmails = (process.env.ADMIN_EMAILS || "")
   .split(",")
-  .map((e) => e.trim().toLowerCase())
+  .map((e) => e.replace(/['"]/g, "").trim().toLowerCase())
   .filter(Boolean);
 
 export const isAdminEmail = (email?: string | null) =>
-  !!email && adminEmails.includes(email.toLowerCase());
+  !!email && adminEmails.includes(email.trim().toLowerCase());
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      authorization: {
+        params: {
+          prompt: "select_account",
+        },
+      },
     }),
   ],
   session: { strategy: "jwt" },
