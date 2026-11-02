@@ -1,9 +1,21 @@
 import { withAuth } from "next-auth/middleware";
 
-// Only signed-in admins can open /admin pages. API routes re-check on the server as well.
+// Only signed-in admins can open /admin pages.
 export default withAuth({
   secret: process.env.NEXTAUTH_SECRET,
-  callbacks: { authorized: ({ token }) => Boolean(token?.isAdmin) },
+  callbacks: {
+    authorized: ({ token }) => {
+      if (!token) return false;
+      if (token.isAdmin) return true;
+      const email = (token.email || "").trim().toLowerCase();
+      if (!email) return false;
+      const admins = (process.env.ADMIN_EMAILS || "")
+        .split(",")
+        .map((e) => e.replace(/['"\s]/g, "").trim().toLowerCase())
+        .filter(Boolean);
+      return admins.includes(email);
+    },
+  },
   pages: { signIn: "/login" },
 });
 
