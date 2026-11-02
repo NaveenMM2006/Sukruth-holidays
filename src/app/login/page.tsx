@@ -1,9 +1,18 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AlertCircle, LogOut } from "lucide-react";
+import { AlertCircle, LogOut, ShieldAlert, CheckCircle2 } from "lucide-react";
+
+type WhoAmI = {
+  authenticated: boolean;
+  userEmail: string | null;
+  isAdmin: boolean;
+  adminEmailsConfigured: string[];
+  hasSecret: boolean;
+  nextAuthUrl: string | null;
+};
 
 function LoginInner() {
   const router = useRouter();
@@ -11,15 +20,23 @@ function LoginInner() {
   const callbackUrl = sp.get("callbackUrl") || "/";
   const error = sp.get("error");
   const { data: session, status } = useSession();
+  const [whoami, setWhoami] = useState<WhoAmI | null>(null);
 
   const isAdminTarget = callbackUrl.startsWith("/admin");
-  const isAccessDenied = status === "authenticated" && isAdminTarget && !session?.user?.isAdmin;
 
   useEffect(() => {
-    if (status === "authenticated" && (!isAdminTarget || session?.user?.isAdmin)) {
-      router.push(callbackUrl);
+    fetch("/api/auth/whoami")
+      .then((r) => r.json())
+      .then(setWhoami)
+      .catch(() => {});
+  }, [status]);
+
+  useEffect(() => {
+    if (status === "authenticated" && (!isAdminTarget || session?.user?.isAdmin || whoami?.isAdmin)) {
+      // Use window.location for hard navigation to ensure cookies sync
+      window.location.href = callbackUrl;
     }
-  }, [status, session, callbackUrl, isAdminTarget, router]);
+  }, [status, session, callbackUrl, isAdminTarget, whoami]);
 
   return (
     <div className="container-x grid min-h-[60vh] place-items-center py-16">
@@ -39,30 +56,58 @@ function LoginInner() {
           </p>
         )}
 
-        {isAccessDenied ? (
-          <div className="mt-5 space-y-4">
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-left text-sm text-amber-900">
-              <div className="flex items-center gap-2 font-bold text-amber-800">
-                <AlertCircle size={18} />
-                <span>Email Not Authorized</span>
-              </div>
-              <p className="mt-2">
-                Signed in as <strong>{session?.user?.email}</strong>, but this email is not in <code>ADMIN_EMAILS</code>.
+        {/* Diagnostic info when trying to access admin */}
+        {isAdminTarget && whoami && (
+          <div className="mt-5 space-y-3 rounded-2xl border border-ink/10 bg-mist/60 p-4 text-left text-xs text-ink/80">
+            <p className="font-semibold text-ink">Account Status:</p>
+            <div className="space-y-1">
+              <p>
+                • Signed in:{" "}
+                <span className="font-mono font-bold">
+                  {whoami.authenticated ? whoami.userEmail : "Not signed in"}
+                </span>
               </p>
-              <p className="mt-2 text-xs text-amber-700">
-                Add <strong>{session?.user?.email}</strong> to <code>ADMIN_EMAILS</code> in your Vercel Environment Variables, or sign in with an authorized account.
+              <p>
+                • Admin recognized:{" "}
+                <span className={`font-bold ${whoami.isAdmin ? "text-green-600" : "text-amber-600"}`}>
+                  {whoami.isAdmin ? "YES (Authorized)" : "NO (Access Denied)"}
+                </span>
+              </p>
+              <p>
+                • Allowed admin emails in Vercel:{" "}
+                <span className="font-mono">
+                  {whoami.adminEmailsConfigured.length ? whoami.adminEmailsConfigured.join(", ") : "(None configured!)"}
+                </span>
               </p>
             </div>
+            {!whoami.hasSecret && (
+              <p className="font-semibold text-red-600">
+                ⚠ NEXTAUTH_SECRET is missing in your Vercel Environment Variables!
+              </p>
+            )}
+            {whoami.adminEmailsConfigured.length === 0 && (
+              <p className="font-semibold text-red-600">
+                ⚠ ADMIN_EMAILS is missing or empty in your Vercel Environment Variables!
+              </p>
+            )}
+            {whoami.authenticated && !whoami.isAdmin && (
+              <p className="rounded-lg bg-amber-100 p-2 text-amber-900">
+                👉 Your Google email (<strong className="font-mono">{whoami.userEmail}</strong>) does not match the list above. Add it to <code className="font-mono font-bold">ADMIN_EMAILS</code> in Vercel settings and redeploy.
+              </p>
+            )}
+          </div>
+        )}
 
+        {status === "authenticated" && !session?.user?.isAdmin && !whoami?.isAdmin ? (
+          <div className="mt-5 space-y-3">
             <button
               onClick={() => signIn("google", { callbackUrl, prompt: "select_account" })}
               className="btn-dark w-full"
             >
               Sign in with another Google account
             </button>
-
             <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
+              onClick={() => signOut({ callbackUrl: "/login?callbackUrl=/admin" })}
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-ink/20 py-2.5 text-sm font-medium hover:bg-mist"
             >
               <LogOut size={16} /> Sign out
