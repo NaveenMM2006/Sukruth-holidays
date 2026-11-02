@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-paper font-body text-ink antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  @apply font-display;
+  text-wrap: balance;
+}
+
+:focus-visible {
+  outline: 3px solid #f4b63f;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply btn bg-marigold text-ink hover:bg-marigold-dark;
+  }
+  .btn-dark {
+    @apply btn bg-ink text-white hover:bg-lagoon-dark;
+  }
+  .btn-ghost {
+    @apply btn border border-ink/20 text-ink hover:bg-mist;
+  }
+  .input {
+    @apply w-full rounded-xl border border-ink/15 bg-white px-4 py-2.5 text-ink placeholder:text-ink/40 focus:border-lagoon focus:outline-none focus:ring-2 focus:ring-lagoon/30;
+  }
+  .label {
+    @apply mb-1 block text-sm font-semibold text-ink/80;
+  }
+  .container-x {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* Skeleton shimmer used by loading.tsx files */
+.skeleton {
+  background: linear-gradient(90deg, #e3eeef 25%, #f3f8f8 50%, #e3eeef 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 1rem;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .skeleton,
+  .animate-drift {
+    animation: none !important;
+  }
+}
