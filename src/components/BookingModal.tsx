@@ -14,10 +14,16 @@ export default function BookingModal({
   kind,
   itemId,
   itemTitle,
+  initialMessage,
+  label = "Book now",
+  className = "btn-dark !px-5 !py-2 text-sm",
 }: {
   kind: "package" | "vehicle";
   itemId: string;
   itemTitle: string;
+  initialMessage?: string;
+  label?: string;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDialogElement>(null);
@@ -31,8 +37,8 @@ export default function BookingModal({
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="btn-dark !px-5 !py-2 text-sm">
-        Book now
+      <button onClick={() => setOpen(true)} className={className}>
+        {label}
       </button>
       <dialog
         ref={ref}
@@ -50,7 +56,12 @@ export default function BookingModal({
             >
               <X size={18} />
             </button>
-            <BookingPanel kind={kind} itemId={itemId} itemTitle={itemTitle} />
+            <BookingPanel
+              kind={kind}
+              itemId={itemId}
+              itemTitle={itemTitle}
+              initialMessage={initialMessage}
+            />
           </div>
         )}
       </dialog>

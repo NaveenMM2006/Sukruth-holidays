@@ -10,6 +10,7 @@ import clsx from "clsx";
 const links = [
   { href: "/packages", label: "Packages" },
   { href: "/vehicles", label: "Vehicle rental" },
+  { href: "/fare-calculator", label: "Fare Calculator" },
   { href: "/offers", label: "Hot offers" },
   { href: "/contact", label: "Contact" },
 ];
@@ -22,7 +23,7 @@ export default function Navbar() {
   if (pathname.startsWith("/admin")) return null;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/95 text-white backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-ink/95 text-white backdrop-blur">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:rounded focus:bg-marigold focus:px-3 focus:py-1 focus:text-ink"

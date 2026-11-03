@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { Search, Car, ShieldCheck, Headset, Wallet, ArrowRight } from "lucide-react";
+import { Search, Car, ShieldCheck, Headset, Wallet, ArrowRight, Calculator } from "lucide-react";
 import SafeImage from "@/components/SafeImage";
 import { FeaturedPackages, HotOffers, SectionSkeleton } from "@/components/Sections";
 import { getFeaturedPackages } from "@/lib/queries";
@@ -79,8 +79,11 @@ export default async function Home() {
               <Link href="/vehicles" className="flex items-center gap-2 rounded-full border border-white/25 px-4 py-2 hover:bg-white/10">
                 <Car size={16} aria-hidden /> Need a vehicle only?
               </Link>
-              <Link href="/offers" className="flex items-center gap-2 rounded-full border border-marigold/60 px-4 py-2 text-marigold hover:bg-marigold/10">
-                See hot offers
+              <Link href="/fare-calculator" className="flex items-center gap-2 rounded-full border border-marigold/60 px-4 py-2 text-marigold hover:bg-marigold/10">
+                <Calculator size={16} aria-hidden /> Calculate trip fare
+              </Link>
+              <Link href="/offers" className="flex items-center gap-2 rounded-full border border-white/25 px-4 py-2 hover:bg-white/10">
+                Hot offers
               </Link>
             </div>
           </div>
@@ -140,7 +143,12 @@ export default async function Home() {
             <p className="mt-3 max-w-lg text-white/85">
               Sedans, SUVs and Tempo Travellers with experienced drivers. Pay by the day or by the kilometre.
             </p>
-            <Link href="/vehicles" className="btn-primary mt-6">Browse vehicles</Link>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href="/vehicles" className="btn-primary">Browse vehicles</Link>
+              <Link href="/fare-calculator" className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 font-semibold text-white transition-colors hover:bg-white/20">
+                <Calculator size={18} /> Calculate fare by KM
+              </Link>
+            </div>
           </div>
           <div className="relative aspect-[16/10] overflow-hidden rounded-2xl shadow-xl">
             <SafeImage

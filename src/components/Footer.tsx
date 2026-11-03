@@ -21,6 +21,7 @@ export default function Footer() {
         <nav aria-label="Footer" className="grid grid-cols-2 gap-2 text-sm">
           <Link href="/packages" className="hover:text-marigold">Packages</Link>
           <Link href="/vehicles" className="hover:text-marigold">Vehicle rental</Link>
+          <Link href="/fare-calculator" className="hover:text-marigold">Fare Calculator</Link>
           <Link href="/offers" className="hover:text-marigold">Hot offers</Link>
           <Link href="/contact" className="hover:text-marigold">Contact</Link>
         </nav>

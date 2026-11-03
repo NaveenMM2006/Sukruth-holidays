@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Users, Check } from "lucide-react";
+import Link from "next/link";
+import { Users, Check, Calculator } from "lucide-react";
 import SafeImage from "@/components/SafeImage";
 import Pagination from "@/components/Pagination";
 import BookingModal from "@/components/BookingModal";
@@ -22,8 +23,18 @@ export default async function VehiclesPage({ searchParams }: { searchParams: { p
 
   return (
     <div className="container-x py-12">
-      <h1 className="text-4xl font-bold sm:text-5xl">Vehicle rental</h1>
-      <p className="mt-2 max-w-xl text-ink/70">Clean vehicles with experienced local drivers, for a day, a weekend or a whole trip.</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-4xl font-bold sm:text-5xl">Vehicle rental</h1>
+          <p className="mt-2 max-w-xl text-ink/70">Clean vehicles with experienced local drivers, for a day, a weekend or a whole trip.</p>
+        </div>
+        <Link
+          href="/fare-calculator"
+          className="btn-primary !py-2.5 !px-5 inline-flex items-center gap-2 self-start sm:self-auto"
+        >
+          <Calculator size={16} /> Calculate Trip Fare
+        </Link>
+      </div>
 
       <div className="mt-10">
         {data.items.length ? (

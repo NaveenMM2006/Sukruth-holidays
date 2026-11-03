@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { CheckCircle2, Phone, MessageCircle, Loader2 } from "lucide-react";
 
-type Props = { kind: "package" | "vehicle"; itemId: string; itemTitle: string };
+type Props = {
+  kind: "package" | "vehicle";
+  itemId: string;
+  itemTitle: string;
+  initialMessage?: string;
+};
 
 /**
  * Booking flow:
@@ -12,12 +17,12 @@ type Props = { kind: "package" | "vehicle"; itemId: string; itemTitle: string };
  * 2. Logged in      -> mobile number (+ optional date / travellers / note) -> "Send booking request"
  * 3. Success        -> shows the agency contact number; the admin gets an email with the customer's email + mobile
  */
-export default function BookingPanel({ kind, itemId, itemTitle }: Props) {
+export default function BookingPanel({ kind, itemId, itemTitle, initialMessage = "" }: Props) {
   const { data: session, status } = useSession();
   const [phone, setPhone] = useState("");
   const [travelDate, setTravelDate] = useState("");
   const [travellers, setTravellers] = useState(1);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(initialMessage);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState<{ contactPhone: string } | null>(null);
